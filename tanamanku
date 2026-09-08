@@ -1,0 +1,92 @@
+
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Peneliti Botani Muda — Siklus Hidup Tumbuhan</title>
+<style>
+:root{--green:#4caf75;--dark:#24543a;--mint:#dff7e7;--yellow:#ffd166;--pink:#ff8fab;--blue:#8ecae6;--cream:#fffdf2}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(rgba(18,55,32,.18),rgba(18,55,32,.18)),url("background.jpg") center/cover fixed;color:#244;overflow:hidden}
+#app{width:min(96vw,1200px);aspect-ratio:16/9;max-height:96vh;margin:2vh auto;background:rgba(255,253,242,.78);backdrop-filter:blur(3px);border-radius:28px;box-shadow:0 20px 60px #173d2855;overflow:hidden;position:relative}
+.screen{display:none;width:100%;height:100%;padding:4%;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+.screen.active{display:flex}.title{font-size:clamp(2rem,5vw,4.6rem);margin:0;color:var(--dark);text-shadow:3px 3px 0 #fff}.subtitle{font-size:clamp(1rem,2vw,1.5rem)}
+.hero{font-size:clamp(4rem,11vw,9rem);animation:float 3s ease-in-out infinite}.btnrow{display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+.btn{border:0;border-radius:20px;padding:18px 30px;font-size:clamp(1rem,2vw,1.45rem);font-weight:800;cursor:pointer;background:var(--green);color:white;box-shadow:0 7px 0 #2e8054;transition:.2s}
+.btn:hover{transform:scale(1.08) translateY(-3px);filter:brightness(1.06)}.btn:active{transform:translateY(4px);box-shadow:0 3px 0 #2e8054}.btn.alt{background:var(--blue);box-shadow:0 7px 0 #5799b7}.btn.warn{background:var(--pink);box-shadow:0 7px 0 #c95f7d}
+input{font-size:clamp(1rem,2vw,1.4rem);padding:15px;border-radius:14px;border:3px solid var(--green);width:min(500px,80%);margin:8px}
+.card{background:rgba(255,255,255,.90);backdrop-filter:blur(5px);border-radius:26px;padding:28px;box-shadow:0 10px 25px #0002;width:min(850px,92%)}#hud{position:absolute;top:18px;left:24px;right:24px;display:flex;justify-content:space-between;font-weight:bold;font-size:clamp(.8rem,1.8vw,1.25rem);z-index:3}.pill{background:#fff;padding:10px 16px;border-radius:999px;box-shadow:0 4px 10px #0002}
+.question{font-size:clamp(1.2rem,2.5vw,2rem);font-weight:800;margin-bottom:18px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:14px}.answer{padding:16px;border:0;border-radius:16px;background:var(--mint);font-size:clamp(.9rem,1.7vw,1.2rem);font-weight:bold;cursor:pointer;transition:.2s}.answer:hover{transform:scale(1.03);background:#c4f2d2}.answer.correct{background:#80ed99;animation:pop .55s}.answer.wrong{background:#ffadad;animation:shake .45s}
+.sequence{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:15px}.seq{background:#fff1a8;padding:14px;border-radius:12px;cursor:pointer;font-weight:bold;border:2px dashed #d5aa00}.selected{outline:4px solid var(--green);transform:scale(1.05)}.dropzone{min-height:70px;border:3px dashed var(--green);border-radius:18px;padding:10px;margin:15px;background:#f2fff5}
+.feedback{height:35px;font-weight:bold;font-size:1.2rem;margin:10px}.badge{font-size:5rem;animation:bounce 1s infinite}.scoreboard{display:grid;gap:10px;font-size:clamp(1rem,2vw,1.5rem)}
+.confetti{position:absolute;width:12px;height:18px;top:-20px;animation:fall linear forwards;z-index:10}
+.small{font-size:.9rem;color:#587}.hint{color:#6b6b6b}
+@keyframes float{50%{transform:translateY(-12px) rotate(3deg)}}@keyframes pop{50%{transform:scale(1.08)}}@keyframes shake{25%,75%{transform:translateX(12px)}50%{transform:translateX(-12px)}}@keyframes bounce{50%{transform:translateY(-15px)}}@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media(max-width:700px){#app{width:100vw;max-height:none;border-radius:0}.answers{grid-template-columns:1fr}.screen{padding:7%}.btn{padding:14px 20px}}
+</style>
+</head>
+<body>
+<div id="app">
+<section id="home" class="screen active">
+<div class="hero">🌱🔬🌻</div><h1 class="title">Peneliti Botani Muda</h1>
+<p class="subtitle">Petualangan Edukasi: <b>Siklus Hidup & Perkembangbiakan Tumbuhan</b></p>
+<div class="btnrow"><button class="btn" onclick="chooseMode(1)">👩‍🔬 1 Pemain</button><button class="btn alt" onclick="chooseMode(2)">👩‍🔬👨‍🔬 2 Pemain</button></div>
+<p class="small">Jawab 7 tantangan acak sebelum waktu habis!</p>
+</section>
+<section id="names" class="screen">
+<div class="card"><h2>📝 Identitas Peneliti</h2><p>Masukkan nama para peneliti botani muda.</p>
+<input id="p1" maxlength="18" placeholder="Nama Pemain 1"><input id="p2" maxlength="18" placeholder="Nama Pemain 2" style="display:none">
+<div class="btnrow"><button class="btn" onclick="startGame()">🚀 Mulai Penelitian!</button><button class="btn warn" onclick="showScreen('home')">Kembali</button></div></div>
+</section>
+<section id="game" class="screen">
+<div id="hud"><span class="pill" id="turn">🌿 Giliran</span><span class="pill" id="progress">Soal 1/7</span><span class="pill" id="timer">⏳ 05:00</span></div>
+<div class="card" id="gameCard"></div>
+</section>
+<section id="result" class="screen">
+<div class="badge">🏅</div><h1 class="title">Penelitian Selesai!</h1><div class="card scoreboard" id="scoreboard"></div>
+<h2>🌟 Lencana Kehormatan: <span style="color:#b47a00">Peneliti Botani Senior</span></h2>
+<div class="btnrow"><button class="btn" onclick="restart()">🔄 Main Lagi</button><button class="btn alt" onclick="showScreen('home')">🏠 Beranda</button></div>
+</section>
+</div>
+<script>
+let mode=1, players=[], scores=[], currentPlayer=0, questions=[], qIndex=0, timeLeft=300, timerId=null, startedAt=0, locked=false;
+const bank=[
+{type:'mc',q:'🌱 Bagian tumbuhan yang pertama kali tumbuh dari biji adalah...',a:['Akar','Bunga','Buah','Daun'],correct:0,ex:'Benar! Akar membantu kecambah menyerap air dan nutrisi.'},
+{type:'mc',q:'🐝 Peran serangga seperti lebah pada banyak tumbuhan berbunga adalah...',a:['Membantu penyerbukan','Membuat tanah','Menghasilkan biji','Memotong daun'],correct:0,ex:'Tepat! Lebah dapat memindahkan serbuk sari.'},
+{type:'decision',q:'🌸 Bunga telah menerima serbuk sari pada kepala putik. Apa proses penting berikutnya?',a:['Pembuahan','Fotosintesis','Penguapan','Perkecambahan'],correct:0,ex:'Ya! Setelah penyerbukan dapat terjadi pembuahan.'},
+{type:'mc',q:'🌰 Biji membutuhkan kondisi tertentu untuk berkecambah. Yang paling penting adalah...',a:['Air, oksigen, dan suhu sesuai','Cat warna-warni','Suara musik keras','Tanah selalu kering'],correct:0,ex:'Benar! Air dan oksigen membantu proses perkecambahan.'},
+{type:'decision',q:'🍓 Stroberi dapat berkembang biak secara vegetatif menggunakan...',a:['Geragih (stolon)','Akar napas','Serbuk sari saja','Kelopak bunga'],correct:0,ex:'Hebat! Geragih tumbuh mendatar dan membentuk individu baru.'},
+{type:'mc',q:'🌻 Urutan umum siklus hidup tumbuhan berbunga yang benar adalah...',a:['Biji → Kecambah → Dewasa → Bunga → Buah/Biji','Bunga → Akar → Batu → Biji','Daun → Buah → Kecambah → Awan','Biji → Buah → Bunga → Tanah'],correct:0,ex:'Luar biasa! Siklus kemudian dapat berulang dari biji baru.'},
+{type:'sequence',q:'🔄 Urutkan siklus hidup tumbuhan berikut dengan menekan kartu sesuai urutan yang benar!',items:['🌱 Kecambah','🌼 Tumbuhan dewasa berbunga','🌰 Biji','🍎 Buah & biji baru'],correct:['🌰 Biji','🌱 Kecambah','🌼 Tumbuhan dewasa berbunga','🍎 Buah & biji baru'],ex:'Urutanmu tepat! Siklus dimulai kembali dari biji.'},
+{type:'sequence',q:'🧬 Urutkan proses perkembangbiakan generatif!',items:['Pembuahan','Biji terbentuk','Penyerbukan','Tumbuhan baru'],correct:['Penyerbukan','Pembuahan','Biji terbentuk','Tumbuhan baru'],ex:'Bagus! Itulah rangkaian utama reproduksi generatif.'},
+{type:'decision',q:'🌿 Kentang dapat berkembang biak secara vegetatif melalui...',a:['Umbi batang','Biji bersayap','Kelopak','Serbuk sari'],correct:0,ex:'Benar! Mata tunas pada umbi dapat tumbuh menjadi tanaman baru.'},
+{type:'mc',q:'☀️ Setelah menjadi tumbuhan dewasa, tumbuhan membuat makanan terutama melalui...',a:['Fotosintesis','Penyerbukan','Pembuahan','Fermentasi'],correct:0,ex:'Tepat! Daun menggunakan cahaya untuk fotosintesis.'}
+];
+function audio(freq,dur=.12,type='sine',delay=0,vol=.08){try{const c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dur+delay);o.connect(g);g.connect(c.destination);o.start(c.currentTime+delay);o.stop(c.currentTime+dur+delay)}catch(e){}}
+function clickSfx(){audio(520,.07,'square')} function correctSfx(){audio(660,.12);audio(880,.18,'sine',.12)} function wrongSfx(){audio(180,.2,'sawtooth')} function tickSfx(){audio(timeLeft<=10?900:350,.04,'square')} function victory(){[523,659,784,1047].forEach((f,i)=>audio(f,.22,'triangle',i*.13,.06))}
+function showScreen(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');clickSfx()}
+function chooseMode(m){mode=m;document.getElementById('p2').style.display=m===2?'inline-block':'none';showScreen('names')}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function startGame(){players=[document.getElementById('p1').value.trim()||'Peneliti 1'];if(mode===2)players.push(document.getElementById('p2').value.trim()||'Peneliti 2');scores=players.map(()=>0);currentPlayer=0;qIndex=0;questions=shuffle(bank).slice(0,7);timeLeft=300;startedAt=Date.now();locked=false;showScreen('game');clearInterval(timerId);timerId=setInterval(()=>{timeLeft--;updateHUD();if(timeLeft<=10&&timeLeft>0)tickSfx();if(timeLeft<=0){clearInterval(timerId);finishGame()}},1000);renderQuestion()}
+function updateHUD(){let m=String(Math.floor(timeLeft/60)).padStart(2,'0'),s=String(timeLeft%60).padStart(2,'0');document.getElementById('timer').textContent='⏳ '+m+':'+s;document.getElementById('progress').textContent=`Soal ${qIndex+1}/${questions.length}`;document.getElementById('turn').textContent='🌿 Giliran: '+players[currentPlayer]}
+function renderQuestion(){locked=false;updateHUD();let q=questions[qIndex],card=document.getElementById('gameCard');card.innerHTML=`<div class="question">${q.q}</div><div id="content"></div><div class="feedback" id="feedback"></div>`;let c=document.getElementById('content');
+if(q.type==='sequence'){let items=shuffle(q.items),selected=[];c.innerHTML='<div class="dropzone" id="drop">Urutan pilihan: </div><div class="sequence" id="seq"></div><button class="btn" id="checkSeq">Periksa Urutan</button>';let seq=document.getElementById('seq');items.forEach(x=>{let b=document.createElement('button');b.className='seq';b.textContent=x;b.onclick=()=>{if(locked)return;selected.push(x);b.disabled=true;b.classList.add('selected');document.getElementById('drop').textContent='Urutan pilihan: '+selected.join(' → ')};seq.appendChild(b)});document.getElementById('checkSeq').onclick=()=>check(selected.join('|')===q.correct.join('|'),null,q.ex)}
+else{let wrap=document.createElement('div');wrap.className='answers';q.a.forEach((a,i)=>{let b=document.createElement('button');b.className='answer';b.textContent=a;b.onclick=()=>check(i===q.correct,b,q.ex);wrap.appendChild(b)});c.appendChild(wrap)}}
+function check(ok,button,ex){if(locked)return;locked=true;let fb=document.getElementById('feedback');if(button){button.classList.add(ok?'correct':'wrong')}if(ok){scores[currentPlayer]+=10;correctSfx();fb.textContent='✅ '+ex}else{wrongSfx();fb.textContent='❌ Belum tepat. '+ex}setTimeout(()=>{qIndex++;currentPlayer=(currentPlayer+1)%players.length;if(qIndex>=questions.length)finishGame();else renderQuestion()},1400)}
+function finishGame(){clearInterval(timerId);victory();showScreen('result');let used=300-timeLeft,mm=Math.floor(used/60),ss=String(used%60).padStart(2,'0'),winner=Math.max(...scores),rows=players.map((p,i)=>`<div>🔬 <b>${p}</b> — ${scores[i]} poin ${scores[i]===winner?'🌟':''}</div>`).join('');document.getElementById('scoreboard').innerHTML=`${rows}<div>⏱️ Waktu tempuh: <b>${mm}:${ss}</b></div><div class="hint">Terima kasih telah membantu menjaga pengetahuan tentang kehidupan tumbuhan! 🌿</div>`;confetti()}
+function confetti(){for(let i=0;i<70;i++){let x=document.createElement('i');x.className='confetti';x.style.left=Math.random()*100+'%';x.style.background=['#ffd166','#ff8fab','#80ed99','#8ecae6'][i%4];x.style.animationDuration=(1.8+Math.random()*2)+'s';x.style.animationDelay=Math.random()*.7+'s';document.getElementById('app').appendChild(x);setTimeout(()=>x.remove(),4500)}}
+function restart(){document.getElementById('p1').value='';document.getElementById('p2').value='';showScreen('home')}
+</script>
+</body></html>
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:
+        linear-gradient(
+            rgba(18,55,32,.18),
+            rgba(18,55,32,.18)
+        ),
+        url("background.jpg") center/cover fixed;
+    color:#244;
+    overflow:hidden;
+}
